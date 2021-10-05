@@ -13,6 +13,7 @@ def printHelpMsg():
     print("help: print help message")
     print("search [boolean expression]: do bool search with boolean expression")
     print("    e.g. >> search a OR b AND (NOT c OR d AND e) AND (NOT f OR NOT g)")
+    print("exit: bye!")
 
 def importIndex(path: str):
     print("Importing index file from \"{}\"".format(path))
