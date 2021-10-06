@@ -53,8 +53,10 @@ def boolSearch(query: str):
                 self.lhs.print()
                 print(")", end="")
             elif self.type == "BRACE":
+                print("(", end="")
                 self.lhs.print()
-            else: # id
+                print(")", end="")
+            else: # ID
                 print(self.lhs, end="")
 
         def reduce(self):
@@ -63,9 +65,13 @@ def boolSearch(query: str):
                     self.lhs.reduce()
                     if (self.lhs.type == "AND" or self.lhs.type == "OR") and self.lhs.rhs == None:
                         self.lhs = self.lhs.lhs
+                    elif self.lhs.type == "BRACE":
+                        self.lhs = self.lhs.lhs
                 if self.rhs != None:
                     self.rhs.reduce()
                     if (self.rhs.type == "AND" or self.rhs.type == "OR") and self.rhs.rhs == None:
+                        self.rhs = self.rhs.lhs
+                    elif self.rhs.type == "BRACE":
                         self.rhs = self.rhs.lhs
             elif self.type == "BRACE" or self.type == "NOT":
                 self.lhs.reduce()
@@ -150,6 +156,7 @@ def boolSearch(query: str):
                     stack.pop()
                     stack.append(lhs)
                 elif isId(tokens[-1]):
+                    stack[-1].type = "ID"
                     stack[-1].lhs = tokens[-1]
                     tokens.pop()
                     stack.pop()
