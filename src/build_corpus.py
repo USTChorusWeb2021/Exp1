@@ -1,4 +1,5 @@
 import json
+from re import T
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -14,7 +15,18 @@ def main():
 
     stop_words = set(stopwords.words('english'))
     ps = PorterStemmer()
-    punctuations = [',','.','!','?','(',')',';','``',"''",'$']
+    punctuations = \
+    [
+        ',', '.', '!', '?', '(', ')', ';', '`', "'", '"', '$', '/',
+        '\u200b', '\u200d', '‘', '’', ':', '-', '*', '“', '”', '|', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    ]
+
+    def hasPunct(token: str) -> bool:
+        for char in token:
+            if char in punctuations:
+                return True
+        return False
 
     path = '../dataset/US_Financial_News_Articles/'
     subpath = ['2018_01/', '2018_02/', '2018_03/', '2018_04/', '2018_05/']
@@ -31,7 +43,7 @@ def main():
             with open(full_path + file_name, encoding='utf-8') as f:
                 word_tokens = []
                 news_dict = json.load(f)
-                sent_tokens = sent_tokenize(news_dict['text'] + news_dict["title"] * 8)
+                sent_tokens = sent_tokenize(news_dict['text'] + (news_dict["title"] + ' ') * 8)
                 # print(sent_tokens)    
                 for sent_token in sent_tokens:
                     new_word_tokens = word_tokenize(sent_token)
@@ -39,7 +51,7 @@ def main():
                 # print(word_tokens)
                 text_filtered = []
                 for w in word_tokens:
-                    if w not in stop_words and w not in punctuations:
+                    if  w not in stop_words and not hasPunct(w):
                         text_filtered.append(ps.stem(w))
 
                 compressed_path = current_subpath[-2:] + file_name[0] + file_name[-10:-5]
