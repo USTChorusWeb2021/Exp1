@@ -1,3 +1,7 @@
+# build_corpus.py
+# USTChorusWeb2021
+# By HurryPeng & WhitieKitty
+
 import json
 from re import T
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -38,7 +42,7 @@ def main():
         file_list = listdir(full_path)
 
         #for file_name in file_list:
-        for file_name in file_list[0:100]: # TODO
+        for file_name in file_list[0:100]: # TODO: Change input scale
         #for file_name in [file_list[0]]:
             with open(full_path + file_name, encoding='utf-8') as f:
                 word_tokens = []
@@ -51,7 +55,7 @@ def main():
                 # print(word_tokens)
                 text_filtered = []
                 for w in word_tokens:
-                    if  w not in stop_words and not hasPunct(w):
+                    if  w not in stop_words and w.isalpha() and w != "":
                         text_filtered.append(ps.stem(w))
 
                 compressed_path = current_subpath[-2:] + file_name[0] + file_name[-10:-5]

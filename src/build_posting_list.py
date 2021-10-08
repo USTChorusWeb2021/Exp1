@@ -1,4 +1,4 @@
-# bool_search.py
+# build_posting_list.py
 # USTChorusWeb2021
 # By HurryPeng & WhitieKitty
 
