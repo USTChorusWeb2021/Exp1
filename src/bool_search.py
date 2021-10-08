@@ -203,7 +203,8 @@ def loadPostingList(path: str) -> None:
 def boolSearch(query: str) -> None:
     start_time = time.time()
 
-    print("Received query string \"{}\"".format(query))
+    print("Received query string:")
+    print(query)
 
     # Scan tokens
     query = query.replace("(", " ( ").replace(")", " ) ")
