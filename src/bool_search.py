@@ -142,6 +142,8 @@ class Exp:
             self.lhs.reduce()
             if (self.lhs.type == "AND" or self.lhs.type == "OR") and self.lhs.rhs == None:
                 self.lhs = self.lhs.lhs
+            elif self.rhs.type == "BRACE":
+                self.rhs = self.rhs.lhs
 
     def eval(self) -> ArticleSet:
         if self.type == "AND":
@@ -313,9 +315,9 @@ def boolSearch(query: str) -> None:
         root.print()
         print("")
 
-        print("Finished searching in {} seconds".format(time.time() - start_time))
-        print("Search result:")
         result = root.eval()
+        print("Finished searching in {} seconds".format(time.time() - start_time))
+        print("Found {} matching result(s):".format(len(result.articles)))
         if result.isNot:
             print("NOT ", end="")
         print(result.articles)
