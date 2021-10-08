@@ -205,6 +205,10 @@ def loadPostingList(path: str) -> None:
     print("Load complete")
 
 def boolSearch(query: str) -> None:
+    if posting_list == None:
+        print("Error: posting list is not loaded")
+        return
+
     start_time = time.time()
 
     print("Received query string:")
@@ -307,6 +311,10 @@ def boolSearch(query: str) -> None:
                     tokens.pop()
                 else:
                     raise SyntaxError()
+
+        # print("Raw AST: ")
+        # root.print()
+        # print("")
 
         # Reduce root
         root.reduce()
