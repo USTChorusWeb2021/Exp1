@@ -4,8 +4,10 @@
 
 import json
 import time
+from nltk.stem import PorterStemmer
 
 posting_list = None
+porter_stemmer = PorterStemmer()
 
 class ArticleSet:
     def __init__(self, articles: list = [], isNot: bool = False) -> None:
@@ -142,8 +144,8 @@ class Exp:
             self.lhs.reduce()
             if (self.lhs.type == "AND" or self.lhs.type == "OR") and self.lhs.rhs == None:
                 self.lhs = self.lhs.lhs
-            elif self.rhs.type == "BRACE":
-                self.rhs = self.rhs.lhs
+            elif self.lhs.type == "BRACE":
+                self.lhs = self.lhs.lhs
 
     def eval(self) -> ArticleSet:
         if self.type == "AND":
@@ -176,7 +178,7 @@ class Exp:
             lhs_eval = ArticleSet([], True)
             if self.lhs != None:
                 try:
-                    lhs_eval = ArticleSet(posting_list[self.lhs])
+                    lhs_eval = ArticleSet(posting_list[porter_stemmer.stem(self.lhs)])
                 except Exception:
                     lhs_eval = ArticleSet([], True)
             return lhs_eval
