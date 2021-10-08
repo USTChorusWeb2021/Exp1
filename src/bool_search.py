@@ -10,16 +10,16 @@ posting_list = None
 porter_stemmer = PorterStemmer()
 
 class ArticleSet:
-    def __init__(self, articles: list = [], isNot: bool = False) -> None:
+    def __init__(self, articles: list = [], is_not: bool = False) -> None:
         self.articles = articles
-        self.isNot = isNot
+        self.is_not = is_not
 
     def clone(self):
-        return ArticleSet(self.articles.copy(), self.isNot)
+        return ArticleSet(self.articles.copy(), self.is_not)
 
     @staticmethod
-    def basicAnd(lhs, rhs): # lhs AND rhs, inheriting lhs's isNot flag
-        ret = ArticleSet([], lhs.isNot)
+    def basicAnd(lhs, rhs): # lhs AND rhs, inheriting lhs's is_not flag
+        ret = ArticleSet([], lhs.is_not)
         i = 0
         j = 0
         while i < len(lhs.articles) and j < len(rhs.articles):
@@ -34,8 +34,8 @@ class ArticleSet:
         return ret
 
     @staticmethod
-    def basicOr(lhs, rhs): # lhs OR rhs, inheriting lhs's isNot flag
-        ret = ArticleSet([], lhs.isNot)
+    def basicOr(lhs, rhs): # lhs OR rhs, inheriting lhs's is_not flag
+        ret = ArticleSet([], lhs.is_not)
         i = 0
         j = 0
         while i < len(lhs.articles) and j < len(rhs.articles):
@@ -54,8 +54,8 @@ class ArticleSet:
         return ret
 
     @staticmethod
-    def basicErase(lhs, rhs): # lhs - rhs, inheriting lhs's isNot flag
-        ret = ArticleSet([], lhs.isNot)
+    def basicErase(lhs, rhs): # lhs - rhs, inheriting lhs's is_not flag
+        ret = ArticleSet([], lhs.is_not)
         i = 0
         j = 0
         while i < len(lhs.articles) and j < len(rhs.articles):
@@ -71,28 +71,28 @@ class ArticleSet:
         return ret
     
     def __and__(self, rhs):
-        if self.isNot == False and rhs.isNot == False:
+        if self.is_not == False and rhs.is_not == False:
             return ArticleSet.basicAnd(self, rhs)
-        elif self.isNot == False and rhs.isNot == True:
+        elif self.is_not == False and rhs.is_not == True:
             return ArticleSet.basicErase(self, rhs)
-        elif self.isNot == True and rhs.isNot == False:
+        elif self.is_not == True and rhs.is_not == False:
             return ArticleSet.basicErase(rhs, self)
         else:
             return ArticleSet.basicOr(self, rhs)
     
     def __or__(self, rhs):
-        if self.isNot == False and rhs.isNot == False:
+        if self.is_not == False and rhs.is_not == False:
             return ArticleSet.basicOr(self, rhs)
-        elif self.isNot == False and rhs.isNot == True:
+        elif self.is_not == False and rhs.is_not == True:
             return ArticleSet.basicErase(rhs, self)
-        elif self.isNot == True and rhs.isNot == False:
+        elif self.is_not == True and rhs.is_not == False:
             return ArticleSet.basicErase(self, rhs)
         else:
             return ArticleSet.basicAnd(self, rhs)
     
     def __invert__(self):
         ret = self.clone()
-        ret.isNot = not self.isNot
+        ret.is_not = not self.is_not
         return ret
 
 class Exp:
@@ -320,7 +320,7 @@ def boolSearch(query: str) -> None:
         result = root.eval()
         print("Finished searching in {} seconds".format(time.time() - start_time))
         print("Found {} matching result(s):".format(len(result.articles)))
-        if result.isNot:
+        if result.is_not:
             print("NOT ", end="")
         print(result.articles)
                     
