@@ -3,8 +3,95 @@
 # By HurryPeng & WhitieKitty
 
 import json
+import time
 
 posting_list = None
+
+class ArticleSet:
+    def __init__(self, articles: list = [], isNot: bool = False) -> None:
+        self.articles = articles
+        self.isNot = isNot
+
+    def clone(self):
+        return ArticleSet(self.articles.copy(), self.isNot)
+
+    @staticmethod
+    def basicAnd(lhs, rhs): # lhs AND rhs, inheriting lhs's isNot flag
+        ret = ArticleSet([], lhs.isNot)
+        i = 0
+        j = 0
+        while i < len(lhs.articles) and j < len(rhs.articles):
+            if lhs.articles[i] < rhs.articles[j]:
+                i += 1
+            elif lhs.articles[i] > rhs.articles[j]:
+                j += 1
+            else:
+                ret.articles.append(lhs.articles[i])
+                i += 1
+                j += 1
+        return ret
+
+    @staticmethod
+    def basicOr(lhs, rhs): # lhs OR rhs, inheriting lhs's isNot flag
+        ret = ArticleSet([], lhs.isNot)
+        i = 0
+        j = 0
+        while i < len(lhs.articles) and j < len(rhs.articles):
+            if lhs.articles[i] < rhs.articles[j]:
+                ret.articles.append(lhs.articles[i])
+                i += 1
+            elif lhs.articles[i] > rhs.articles[j]:
+                ret.articles.append(rhs.articles[j])
+                j += 1
+            else:
+                ret.articles.append(lhs.articles[i])
+                i += 1
+                j += 1
+        ret.articles.extend(lhs.articles[i:])
+        ret.articles.extend(rhs.articles[j:])
+        return ret
+
+    @staticmethod
+    def basicErase(lhs, rhs): # lhs - rhs, inheriting lhs's isNot flag
+        ret = ArticleSet([], lhs.isNot)
+        i = 0
+        j = 0
+        while i < len(lhs.articles) and j < len(rhs.articles):
+            if lhs.articles[i] < rhs.articles[j]:
+                ret.articles.append(lhs.articles[i])
+                i += 1
+            elif lhs.articles[i] > rhs.articles[j]:
+                j += 1
+            else:
+                i += 1
+                j += 1
+        ret.articles.extend(lhs.articles[i:])
+        return ret
+    
+    def __and__(self, rhs):
+        if self.isNot == False and rhs.isNot == False:
+            return ArticleSet.basicAnd(self, rhs)
+        elif self.isNot == False and rhs.isNot == True:
+            return ArticleSet.basicErase(self, rhs)
+        elif self.isNot == True and rhs.isNot == False:
+            return ArticleSet.basicErase(rhs, self)
+        else:
+            return ArticleSet.basicOr(self, rhs)
+    
+    def __or__(self, rhs):
+        if self.isNot == False and rhs.isNot == False:
+            return ArticleSet.basicOr(self, rhs)
+        elif self.isNot == False and rhs.isNot == True:
+            return ArticleSet.basicErase(rhs, self)
+        elif self.isNot == True and rhs.isNot == False:
+            return ArticleSet.basicErase(self, rhs)
+        else:
+            return ArticleSet.basicAnd(self, rhs)
+    
+    def __invert__(self):
+        ret = self.clone()
+        ret.isNot = not self.isNot
+        return ret
 
 class Exp:
     def __init__(self, syntax: str, type: str) -> None:
@@ -56,7 +143,41 @@ class Exp:
             if (self.lhs.type == "AND" or self.lhs.type == "OR") and self.lhs.rhs == None:
                 self.lhs = self.lhs.lhs
 
-    
+    def eval(self) -> ArticleSet:
+        if self.type == "AND":
+            lhs_eval = ArticleSet([], True)
+            if self.lhs != None:
+                lhs_eval = self.lhs.eval()
+            rhs_eval = ArticleSet([], True)
+            if self.rhs != None:
+                rhs_eval = self.rhs.eval()
+            return lhs_eval & rhs_eval
+        elif self.type == "OR":
+            lhs_eval = ArticleSet([], False)
+            if self.lhs != None:
+                lhs_eval = self.lhs.eval()
+            rhs_eval = ArticleSet([], False)
+            if self.rhs != None:
+                rhs_eval = self.rhs.eval()
+            return lhs_eval | rhs_eval
+        elif self.type == "NOT":
+            lhs_eval = ArticleSet([], True)
+            if self.lhs != None:
+                lhs_eval = self.lhs.eval()
+            return ~lhs_eval
+        elif self.type == "BRACE":
+            lhs_eval = ArticleSet([], True)
+            if self.lhs != None:
+                lhs_eval = self.lhs.eval()
+            return lhs_eval
+        else: # ID
+            lhs_eval = ArticleSet([], True)
+            if self.lhs != None:
+                try:
+                    lhs_eval = ArticleSet(posting_list[self.lhs])
+                except Exception:
+                    lhs_eval = ArticleSet([], True)
+            return lhs_eval
 
 def printWelcomeMsg() -> None:
     print("Welcome to USTChorusWeb2021 bool search console.")
@@ -64,22 +185,24 @@ def printWelcomeMsg() -> None:
 
 def printHelpMsg() -> None:
     print("help: print help message")
-    print("import [(optional) path]: import posting list, from default path if second parameter is ignored")
+    print("load [(optional) path]: load posting list, from default path if second parameter is ignored")
     print("search [boolean expression]: do bool search with boolean expression")
-    print("    e.g. >> search a OR b AND (NOT c OR d AND e) AND (NOT f OR NOT g)")
+    print("    e.g. >> search war AND (iraq OR iran) AND (NOT (britain OR england) AND NOT (us OR usa OR america)) AND australia")
     print("exit: bye!")
 
-def importPostingList(path: str) -> None:
+def loadPostingList(path: str) -> None:
     if path == "":
         path = "../output/posting_list.json"
-    print("Importing posting list from \"{}\"".format(path))
+    print("Loading posting list from \"{}\"".format(path))
     print("This may take about 10 seconds")
     posting_list_file = open(path, "r")
-    posting_list = json.load(posting_list_file)
+    globals()["posting_list"] = json.load(posting_list_file)
     posting_list_file.close()
-    print("Import complete")
+    print("Load complete")
 
 def boolSearch(query: str) -> None:
+    start_time = time.time()
+
     print("Received query string \"{}\"".format(query))
 
     # Scan tokens
@@ -188,6 +311,13 @@ def boolSearch(query: str) -> None:
         print("Resolved boolean expression: ")
         root.print()
         print("")
+
+        print("Finished searching in {} seconds".format(time.time() - start_time))
+        print("Search result:")
+        result = root.eval()
+        if result.isNot:
+            print("NOT ", end="")
+        print(result.articles)
                     
     except SyntaxError:
         print("Syntax Error! (or my fault)")
@@ -204,8 +334,8 @@ def main() -> int:
             return 0
         elif (len(commands) == 1 and commands[0] == "help"):
             printHelpMsg()
-        elif (commands[0] == "import"):
-            importPostingList(raw_command[len(commands[0]) + 1:])
+        elif (commands[0] == "load"):
+            loadPostingList(raw_command[len(commands[0]) + 1:])
         elif (len(commands) > 1 and commands[0] == "search"):
             boolSearch(raw_command[len(commands[0]) + 1:])
         else:
