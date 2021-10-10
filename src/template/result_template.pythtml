@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Search Results - USTChorusWeb2021 Bool Search</title>
+    <title>Search Result - USTChorusWeb2021 Bool Search</title>
     <style type="text/css">
         body {{
             margin-left: 15%;
@@ -75,19 +75,19 @@
 
 <body>
     <p>
-        <span class="Text_Title">Search Results</span><br>
+        <span class="Text_Title">Search Result</span><br>
         <span class="Text_Subtitle">USTChorusWeb2021 Bool Search</span>
     </p>
     <hr />
     <p class="Text_Default">
         Query: {0}</br>
-        Found {1} matching results in {2} second(s). </br>
-        Showing the first {3} results. 
+        Found {1} matching result(s) in {2} second(s). </br>
+        Showing the first {3} result(s). 
     </p>
     {4}
     <hr />
     <p class="Text_Preview">
-        A list of all search results can be found below: <br/>
+        A list of all search result(s) can be found below: <br/>
         {5}
     </p>
 </body>

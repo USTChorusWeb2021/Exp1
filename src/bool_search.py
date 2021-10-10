@@ -6,6 +6,7 @@ import json
 import time
 from nltk.stem import PorterStemmer
 import webbrowser
+import os
 
 from generate_result import ResultGen
 
@@ -178,12 +179,12 @@ class Exp:
                 lhs_eval = self.lhs.eval()
             return lhs_eval
         else: # ID
-            lhs_eval = ArticleSet([], True)
+            lhs_eval = ArticleSet([], False)
             if self.lhs != None:
                 try:
                     lhs_eval = ArticleSet(posting_list[porter_stemmer.stem(self.lhs)])
                 except Exception:
-                    lhs_eval = ArticleSet([], True)
+                    lhs_eval = ArticleSet([], False)
             return lhs_eval
 
 def printWelcomeMsg() -> None:
@@ -332,8 +333,8 @@ def boolSearch(query: str) -> None:
         elapse = time.time() - start_time
         print("Finished searching in {} seconds".format(elapse))
         print("Found {} matching result(s):".format(len(result.articles)))
-        if result.is_not:
-            print("NOT ", end="")
+        # if result.is_not:
+        #     print("NOT ", end="")
 
         articles = []
         for article in result.articles:
@@ -342,7 +343,7 @@ def boolSearch(query: str) -> None:
             article = article.replace("n", "news_00")
             articles.append(article)
 
-        print(articles)
+        # print(articles)
 
         result_gen = ResultGen()
         result_gen.results = articles
@@ -353,7 +354,7 @@ def boolSearch(query: str) -> None:
         result_file.write(result_gen.generate())
         result_file.close()
 
-        webbrowser.open("file://" + "../output/result.html")
+        webbrowser.open("file://" + os.getcwd() + "/../output/result.html")
     
     except SyntaxError:
         print("Syntax Error! (or my fault)")
