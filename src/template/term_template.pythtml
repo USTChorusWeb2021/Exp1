@@ -1,0 +1,5 @@
+    <p>
+        <span class="Text_ResultTitle"><a href="{0}">{1}</a></span></br>
+        <span class="Text_URL">{2} · {3}</span></br>
+        <span class="Text_Preview">{4} · {5}</span></br>
+    </p>

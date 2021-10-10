@@ -5,6 +5,9 @@
 import json
 import time
 from nltk.stem import PorterStemmer
+import webbrowser
+
+from generate_result import ResultGen
 
 posting_list = None
 porter_stemmer = PorterStemmer()
@@ -326,12 +329,32 @@ def boolSearch(query: str) -> None:
         print("")
 
         result = root.eval()
-        print("Finished searching in {} seconds".format(time.time() - start_time))
+        elapse = time.time() - start_time
+        print("Finished searching in {} seconds".format(elapse))
         print("Found {} matching result(s):".format(len(result.articles)))
         if result.is_not:
             print("NOT ", end="")
-        print(result.articles)
-                    
+
+        articles = []
+        for article in result.articles:
+            article = "2018_0" + article
+            article = article.replace("b", "blogs_00")
+            article = article.replace("n", "news_00")
+            articles.append(article)
+
+        print(articles)
+
+        result_gen = ResultGen()
+        result_gen.results = articles
+        result_gen.query = query
+        result_gen.elapse = elapse
+
+        result_file = open("../output/result.html", "w", encoding='utf-8')
+        result_file.write(result_gen.generate())
+        result_file.close()
+
+        webbrowser.open("file://" + "../output/result.html")
+    
     except SyntaxError:
         print("Syntax Error! (or my fault)")
 

@@ -55,7 +55,7 @@ def main():
                 # print(word_tokens)
                 text_filtered = []
                 for w in word_tokens:
-                    if  w not in stop_words and w.isalpha() and w != "":
+                    if  w not in stop_words and w.encode('utf-8').isalpha() and w != "":
                         text_filtered.append(ps.stem(w))
 
                 compressed_path = current_subpath[-2:] + file_name[0] + file_name[-10:-5]
