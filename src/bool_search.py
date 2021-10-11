@@ -406,7 +406,8 @@ def boolSearch(query: str) -> None:
         result_file.write(result_gen.generate())
         result_file.close()
 
-        webbrowser.open("file://" + os.getcwd() + "/../output/result.html")
+        # webbrowser.open("file://" + os.getcwd() + "/../output/result.html")
+        os.startfile(os.getcwd() + "/../output/result.html")
 
         print("Result page generated")
     
