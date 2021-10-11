@@ -87,8 +87,12 @@
     {4}
     <hr />
     <p class="Text_Preview">
-        A list of all search result(s) can be found below: <br/>
-        {5}
+        <details class = "Text_Default">
+            <summary>A list of all search result(s) can be found here</summary>
+            <p class="Text_Preview">
+                {5}
+            </p>
+        </details>
     </p>
 </body>
 
