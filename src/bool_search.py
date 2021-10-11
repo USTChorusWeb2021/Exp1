@@ -239,7 +239,7 @@ def loadPostingList(path: str) -> None:
             article: int = (article[0] << 16) | (article[1] << 8) | article[2]
             break_flag = False
             if article & 0x800000 != 0:
-                article |= 0x7fffff
+                article &= 0x7fffff
                 break_flag = True
             current_article_list_temp.append(article)
             if break_flag:
