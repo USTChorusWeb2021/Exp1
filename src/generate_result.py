@@ -23,9 +23,12 @@ class ResultGen:
         show_count = len(self.results)
         if show_count > 20:
             show_count = 20
+        show_stride = 1
+        if show_count != 0:
+            show_stride = len(self.results) // show_count
         
         terms = ""
-        for i in range(0, show_count):
+        for i in range(0, show_stride * show_count, show_stride):
             article_name = self.results[i]
             article_path = "../dataset/US_Financial_News_Articles/" + article_name + ".json"
             json_file = open(article_path, "r", encoding='utf-8')

@@ -82,7 +82,7 @@
     <p class="Text_Default">
         Query: {0}</br>
         Found {1} matching result(s) in {2} second(s). </br>
-        Showing the first {3} result(s). 
+        Showing {3} result(s). 
     </p>
     {4}
     <hr />
