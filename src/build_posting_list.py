@@ -29,7 +29,9 @@ def main():
             except KeyError:
                 posting_list[word] = [path]
 
-        heading = ((eval(path[0])) << 1) + (path[1] == 'n')
+        heading = (eval(path[0])) << 1
+        if path[2] == 'n':
+            heading += 1
         heading_bytes = heading.to_bytes(1, 'big')
         posting_list_file.write(heading_bytes)
         number = int(path[3:8])
@@ -60,7 +62,9 @@ def main():
                 article_heading = 0x80 # header begin with 1
             else:
                 article_heading = 0x00
-            article_heading += ((eval(current_word[j][0])) << 1) + (current_word[j][1] == 'n')
+            article_heading += (eval(current_word[j][0])) << 1
+            if current_word[j][2] == 'n':
+                article_heading += 1
             article_heading_bytes = article_heading.to_bytes(1, 'big')
             posting_list_file.write(article_heading_bytes)
 

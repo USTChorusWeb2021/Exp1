@@ -7,9 +7,11 @@ import time
 from nltk.stem import PorterStemmer
 import webbrowser
 import os
+import struct
 
 from generate_result import ResultGen
 
+all_articles_list = None
 posting_list = None
 porter_stemmer = PorterStemmer()
 
@@ -106,29 +108,27 @@ class Exp:
         self.lhs = None
         self.rhs = None
     
-    def print(self) -> None:
+    def __str__(self) -> str:
+        ret = ""
         if self.type == "AND" or self.type == "OR":
-            print("(", end="")
+            ret += "("
             if self.lhs != None:
-                self.lhs.print()
+                ret += "{}".format(self.lhs)
             else:
-                print("NONE", end="")
-            print(" " + self.type + " ", end="")
+                ret += "NONE"
+            ret += " {} ".format(self.type)
             if self.rhs != None:
-                self.rhs.print()
+                ret += "{}".format(self.rhs)
             else:
-                print("NONE", end="")
-            print(")", end="")
+                ret += "NONE"
+            ret += ")"
         elif self.type == "NOT":
-            print("(NOT ", end="")
-            self.lhs.print()
-            print(")", end="")
+            ret += "(NOT {})".format(self.lhs)
         elif self.type == "BRACE":
-            print("(", end="")
-            self.lhs.print()
-            print(")", end="")
+            ret += "({})".format(self.lhs)
         else: # ID
-            print(self.lhs, end="")
+            ret += "{}".format(self.lhs)
+        return ret
 
     def reduce(self) -> None:
         if self.type == "AND" or self.type == "OR":
@@ -200,11 +200,55 @@ def printHelpMsg() -> None:
 
 def loadPostingList(path: str) -> None:
     if path == "":
-        path = "../output/posting_list.json"
+        path = "../output/posting_list.bin"
     print("Loading posting list from \"{}\"".format(path))
-    print("This may take about 10 seconds")
-    posting_list_file = open(path, "r")
-    globals()["posting_list"] = json.load(posting_list_file)
+    print("This may take about 20 seconds")
+
+    posting_list_file = open(path, "rb")
+
+    # Extract all articles list
+    all_articles_list_temp = []
+    while True:
+        article = posting_list_file.read(3)
+        article = struct.unpack("BBB", article)
+        article: int = (article[0] << 16) | (article[1] << 8) | article[2]
+        if article == 0:
+            break
+        all_articles_list_temp.append(article)
+    globals()["all_articles_list"] = all_articles_list_temp
+
+    # Extract posting list
+    posting_list_temp = {}
+    while True:
+        word: str = ""
+        char_buffer = posting_list_file.read(1)
+        if len(char_buffer) == 0:
+            break
+        word += struct.unpack("s", char_buffer)[0].decode()
+        
+        while True:
+            char_buffer = posting_list_file.read(1)
+            if char_buffer[0] == 0:
+                break
+            word += struct.unpack("s", char_buffer)[0].decode()
+
+        current_article_list_temp = []
+        while True:
+            article = posting_list_file.read(3)
+            article = struct.unpack("BBB", article)
+            article: int = (article[0] << 16) | (article[1] << 8) | article[2]
+            break_flag = False
+            if article & 0x800000 != 0:
+                article |= 0x7fffff
+                break_flag = True
+            current_article_list_temp.append(article)
+            if break_flag:
+                break
+        
+        posting_list_temp[word] = current_article_list_temp
+
+    globals()["posting_list"] = posting_list_temp
+    
     posting_list_file.close()
     print("Load complete")
 
@@ -317,8 +361,7 @@ def boolSearch(query: str) -> None:
                     raise SyntaxError()
 
         # print("Raw AST: ")
-        # root.print()
-        # print("")
+        # print(root)
 
         # Reduce root
         root.reduce()
@@ -326,28 +369,37 @@ def boolSearch(query: str) -> None:
             root = root.lhs
 
         print("Resolved boolean expression: ")
-        root.print()
-        print("")
+        print(root)
 
         result = root.eval()
+        if result.is_not:
+            result = ArticleSet.basicErase(ArticleSet(all_articles_list, False), result)
         elapse = time.time() - start_time
         print("Finished searching in {} seconds".format(elapse))
-        print("Found {} matching result(s):".format(len(result.articles)))
-        # if result.is_not:
-        #     print("NOT ", end="")
+        print("Found {} matching result(s)".format(len(result.articles)))
+        
+        # articles = []
+        # for article in result.articles:
+        #     article = "2018_0" + article
+        #     article = article.replace("b", "blogs_00")
+        #     article = article.replace("n", "news_00")
+        #     articles.append(article)
 
         articles = []
         for article in result.articles:
-            article = "2018_0" + article
-            article = article.replace("b", "blogs_00")
-            article = article.replace("n", "news_00")
-            articles.append(article)
+            article_str: str = "2018_0%1d/" % (article >> 17)
+            if (article >> 16) & 0b1 != 0:
+                article_str += "news_00%05d"
+            else:
+                article_str += "blogs_00%05d"
+            article_str %= (article & 0xffff)
+            articles.append(article_str)
 
-        # print(articles)
+        # print(result.articles)
 
         result_gen = ResultGen()
         result_gen.results = articles
-        result_gen.query = query
+        result_gen.query = root.__str__()
         result_gen.elapse = elapse
 
         result_file = open("../output/result.html", "w", encoding='utf-8')
@@ -355,6 +407,8 @@ def boolSearch(query: str) -> None:
         result_file.close()
 
         webbrowser.open("file://" + os.getcwd() + "/../output/result.html")
+
+        print("Result page generated")
     
     except SyntaxError:
         print("Syntax Error! (or my fault)")
@@ -375,6 +429,15 @@ def main() -> int:
             loadPostingList(raw_command[len(commands[0]) + 1:])
         elif (len(commands) > 1 and commands[0] == "search"):
             boolSearch(raw_command[len(commands[0]) + 1:])
+        elif (commands[0] == "eval"):
+            while True:
+                try:
+                    eval_command = input(">>> ")
+                    if eval_command == "exit":
+                        break
+                    eval(eval_command)
+                except Exception:
+                    pass
         else:
             print("Unknown command. Enter \"help\" for help.")
         
