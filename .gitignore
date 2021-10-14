@@ -1,3 +1,4 @@
 dataset/
 output/
 src/__pycache__
+src/api_info.json

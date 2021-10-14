@@ -64,8 +64,8 @@ def evalMode() -> None:
             if eval_command == "exit()":
                 break
             eval(eval_command)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
 def main() -> int:
     printWelcomeMsg()
