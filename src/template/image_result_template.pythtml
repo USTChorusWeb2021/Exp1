@@ -1,0 +1,92 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Search Result - USTChorusWeb2021 Image Search</title>
+    <style type="text/css">
+        body {{
+            margin-left: 15%;
+            margin-top: 50px;
+            margin-right: 15%;
+            margin-bottom: 100px;
+            font-size: 24px;
+            background-color: rgb(255, 255, 255);
+        }}
+
+        .Text_Title {{
+            font-family: "calibri";
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+        }}
+
+        .Text_Subtitle {{
+            font-family: "calibri";
+            font-size: 18px;
+            color: rgb(92, 92, 92);
+        }}
+
+        .Text_Default {{
+            font-family: "calibri";
+            font-size: 18px;
+            color: #000;
+        }}
+
+        .Text_ResultTitle {{
+            font-family: "calibri";
+            font-size: 24px;
+            color: rgb(0, 47, 255);
+        }}
+
+        .Text_URL {{
+            font-family: "calibri";
+            font-size: 18px;
+            color: rgb(0, 110, 0);
+        }}
+
+        .Text_Preview {{
+            font-family: "calibri";
+            font-size: 18px;
+            line-height: 20px;
+            color: rgb(102, 102, 102);
+        }}
+
+        a:link {{
+            color: rgb(0, 15, 224);
+            text-decoration: none;
+        }}
+
+        a:visited {{
+            color: rgb(144, 0, 180);
+            text-decoration: none;
+        }}
+
+        a:hover {{
+            text-decoration: underline;
+        }}
+
+        a:active {{
+            text-decoration: none;
+        }}
+    </style>
+</head>
+
+<body>
+    <p>
+        <span class="Text_Title">Search Result</span><br>
+        <span class="Text_Subtitle">USTChorusWeb2021 Image Search</span>
+    </p>
+    <hr />
+    <p class="Text_Default">
+        Query: {0}</br>
+        Finished searching in {1} second(s). </br>
+        Showing 12 most relevant result(s). 
+    </p>
+    <table>
+        {2}
+    </table>
+</body>
+
+</html>
