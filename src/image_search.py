@@ -22,8 +22,8 @@ def printWelcomeMsg() -> None:
 def printHelpMsg() -> None:
     print("help: print help message")
     print("load [(optional) path]: load image tags")
-    print("search [boolean expression]: do bool search with boolean expression")
-    print("    e.g. >> search war AND (iraq OR iran) AND (NOT (britain OR england) AND NOT (us OR usa OR america)) AND australia")
+    print("search [query]: do image search with query")
+    print("    e.g. >> search ship fire")
     print("exit: bye!")
 
 def loadImageTags(path: str) -> None:

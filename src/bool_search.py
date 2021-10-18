@@ -45,7 +45,7 @@ def boolSearch(query: str) -> None:
         print("Found {} matching result(s)".format(len(articles)))
 
         result_file = open("../output/result.html", "w", encoding='utf-8')
-        result_file.write(result_gen.generate(formatted_query, elapse, articles))
+        result_file.write(result_gen.generate("Bool", formatted_query, elapse, articles))
         result_file.close()
 
         os.startfile(os.getcwd() + "/../output/result.html")

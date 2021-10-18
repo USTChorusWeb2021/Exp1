@@ -14,7 +14,7 @@ class ResultGen:
         self.term_template = self.term_template_file.read()
         self.term_template_file.close()
 
-    def generate(self, query: str, elapse: float, results: list) -> str:
+    def generate(self, search_type: str, query: str, elapse: float, results: list) -> str:
         show_count = len(results)
         if show_count > 20:
             show_count = 20
@@ -42,7 +42,7 @@ class ResultGen:
                 text = text[0:512] + " ..."
             terms += self.term_template.format(url, title, article_name, url_short, date, text)
 
-        return self.result_template.format(query, len(results), elapse, show_count, terms, results)
+        return self.result_template.format(search_type, query, len(results), elapse, show_count, terms, results)
 
 class ImageResultGen:
     def __init__(self) -> None:
