@@ -59,9 +59,9 @@ def main():
             # print(word)
             # print(len(word_stat_dict[doc]))
             # print((weak_posting_list[word].count))
-            tf = word_stat_dict[doc][word]/len(word_stat_dict[doc])
+            tf = math.log10(word_stat_dict[doc][word]) + 1
             # print("tf", tf)
-            idf = math.log2(doc_total/(weak_posting_list[word].count) + 1)
+            idf = math.log10(doc_total / weak_posting_list[word].count)
             # print("idf", idf)
             q.put((tf * idf, word))
             if q.qsize() > 50:
@@ -70,7 +70,7 @@ def main():
         while q.empty() == False:
             current_idf = q.get()
             # print(current_idf[0], current_idf[1])
-            tf_idf[doc][current_idf[1]] = ('%.5f' % current_idf[0])
+            tf_idf[doc][current_idf[1]] = round(current_idf[0], 5)
 
         print(tf_idf[doc])
         print("Finished calculating tf-idf of {}".format(doc))
