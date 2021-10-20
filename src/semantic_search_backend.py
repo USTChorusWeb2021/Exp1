@@ -24,7 +24,6 @@ class SemanticSearcher:
 
         start_time = time.time()
 
-        # keywords = query.split()
         best_matches_queue = queue.PriorityQueue()
 
         for article in scope:
@@ -33,10 +32,7 @@ class SemanticSearcher:
             for keyword in query:
                 keyword = self.porter_stemmer.stem(keyword)
                 try:
-                    # print(compressed_article, keyword)
-                    # rating += self.tf_idf[compressed_article][keyword]
-                    rating += eval(self.tf_idf[compressed_article][keyword])
-                    # print(compressed_article, keyword, self.tf_idf[compressed_article][keyword])
+                    rating += self.tf_idf[compressed_article][keyword]
                 except Exception:
                     pass
             best_matches_queue.put((rating, article))

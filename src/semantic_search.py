@@ -30,7 +30,7 @@ def printHelpMsg() -> None:
     print("help: print help message")
     print("load [(optional) path0] [(optional) path1]: load posting list from path0 and tf-idf matrix from path1")
     print("search [query]: do semantic search with query")
-    print("    e.g. >> search iraq war oil")
+    print("    e.g. >> search china america trade war")
     print("exit: bye!")
 
 def loadTfIdf(path0: str, path1: str) -> None:
@@ -71,10 +71,12 @@ def semanticSearch(query: list) -> None:
         # print(scope)
         # print(query)
         # print(bool_search_query)
-        print(best_matches)
         results = [term[1] for term in best_matches]
 
         print("Finished searching in {} seconds".format(elapse))
+
+        print("Best matches: ")
+        print(print(best_matches))
 
         result_file = open("../output/result.html", "w", encoding='utf-8')
         result_file.write(result_gen.generate("Semantic", sem_format_query, elapse, results))
