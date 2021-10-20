@@ -333,18 +333,16 @@ class BoolSearcher:
 
         return root
 
-    def boolSearch(self, query: str) -> Tuple[str, float, list]:
+    def boolSearch(self, query: str) -> Tuple[str, list]:
         if self.posting_list == None:
             raise RuntimeError("Error: posting list is not loaded")
 
-        start_time = time.time()
 
         root = self.buildAST(query)
 
         result = root.eval(self.posting_list, self.porter_stemmer)
         if result.is_not:
             result = ArticleSet.basicErase(ArticleSet(self.all_articles_list, False), result)
-        elapse = time.time() - start_time
 
         articles = []
         for article in result.articles:
@@ -356,4 +354,4 @@ class BoolSearcher:
             article_str %= (article & 0xffff)
             articles.append(article_str)
 
-        return root.__str__(), elapse, articles
+        return root.__str__(), articles

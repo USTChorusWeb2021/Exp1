@@ -65,9 +65,9 @@ def semanticSearch(query: list) -> None:
             if i != len(query) - 1:
                 bool_search_query += " OR "
         
-        bool_format_query, bool_elapse, scope = bool_searcher.boolSearch(bool_search_query)
-        sem_format_query, sem_elapse, best_matches = semantic_searcher.semanticSearch(query, scope)
-        elapse = bool_elapse + sem_elapse
+        bool_format_query, scope = bool_searcher.boolSearch(bool_search_query)
+        sem_format_query, best_matches = semantic_searcher.semanticSearch(query, scope)
+        elapse = time.time() - start_time
         # print(scope)
         # print(query)
         # print(bool_search_query)

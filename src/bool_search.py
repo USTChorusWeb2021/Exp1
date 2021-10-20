@@ -3,6 +3,7 @@
 # By HurryPeng & WhitieKitty
 
 import os
+import time
 
 from bool_search_backend import BoolSearcher
 from generate_result import ResultGen
@@ -34,12 +35,16 @@ def loadPostingList(path: str) -> None:
 def boolSearch(query: str) -> None:
     print("Received query string:")
     print(query)
+
+    start_time = time.time()
     
     try:
-        formatted_query, elapse, articles = bool_searcher.boolSearch(query)
+        formatted_query, articles = bool_searcher.boolSearch(query)
 
         print("Resolved boolean expression: ")
         print(formatted_query)
+
+        elapse = time.time() - start_time
 
         print("Finished searching in {} seconds".format(elapse))
         print("Found {} matching result(s)".format(len(articles)))

@@ -18,7 +18,7 @@ class SemanticSearcher:
         self.tf_idf = json.load(tf_idf_file)
         tf_idf_file.close()
 
-    def semanticSearch(self, query: list, scope: list) -> Tuple[str, float, list]:
+    def semanticSearch(self, query: list, scope: list) -> Tuple[str, list]:
         if self.tf_idf == None:
             raise RuntimeError("Error: tf-idf matrix is not loaded")
 
@@ -48,6 +48,4 @@ class SemanticSearcher:
             best_matches.append(best_matches_queue.get())
         best_matches.reverse()
 
-        elapse = time.time() - start_time
-
-        return query.__str__(), elapse, best_matches
+        return query.__str__(), best_matches
