@@ -337,7 +337,6 @@ class BoolSearcher:
         if self.posting_list == None:
             raise RuntimeError("Error: posting list is not loaded")
 
-
         root = self.buildAST(query)
 
         result = root.eval(self.posting_list, self.porter_stemmer)

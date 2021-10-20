@@ -7,11 +7,10 @@
 # By HurryPeng & WhitieKitty
 
 import os
-import json
 import time
-import queue
 from nltk.stem import PorterStemmer
-from bool_search import boolSearch
+from nltk.corpus import wordnet
+from nltk.util import pr
 
 from bool_search_backend import BoolSearcher
 from semantic_search_backend import SemanticSearcher
@@ -50,12 +49,49 @@ def loadTfIdf(path0: str, path1: str) -> None:
     print("Load complete")
 
 def semanticSearch(query: list) -> None:
-    print("Received query: ")
-    print(query)
-
-    start_time = time.time()
-    
     try:
+        raw_query = query.copy()
+
+        option_synonym = False
+        option_none_bool = False
+
+        while len(query) != 0 and query[0].startswith("-"):
+            if query[0] == "-s":
+                option_synonym = True
+                query = query[1:]
+            elif query[0] == "-n":
+                option_none_bool = True
+                query = query[1:]
+            else:
+                raise SyntaxError()
+        
+        if len(query) == 0:
+            raise SyntaxError()
+
+        print("Received query: ")
+        print(query)
+        if option_synonym:
+            print("Synonym search enabled")
+        else:
+            print("Synonym search disabled")
+        if option_none_bool:
+            print("Bool search preprocessing disabled")
+        else:
+            print("Bool search preprocessing enabled")
+
+        start_time = time.time()
+
+        if option_synonym:
+            query_with_syn = []
+            for word in query:
+                for syn in wordnet.synsets(word):
+                    for lm in syn.lemmas():
+                        query_with_syn.append(lm.name())
+            query = query_with_syn
+            query = list(set(query)) # remove repeated items
+            print("Query with synonyms")
+            print(query)
+
         query = [porter_stemmer.stem(word) for word in query]
         query.sort()
         
@@ -65,7 +101,20 @@ def semanticSearch(query: list) -> None:
             if i != len(query) - 1:
                 bool_search_query += " OR "
         
-        bool_format_query, scope = bool_searcher.boolSearch(bool_search_query)
+        scope = []
+        if option_none_bool:
+            all_articles = bool_searcher.all_articles_list
+            for article in all_articles:
+                article_str: str = "2018_0%1d/" % (article >> 17)
+                if (article >> 16) & 0b1 != 0:
+                    article_str += "news_00%05d"
+                else:
+                    article_str += "blogs_00%05d"
+                article_str %= (article & 0xffff)
+                scope.append(article_str)
+        else:
+            bool_format_query, scope = bool_searcher.boolSearch(bool_search_query)
+
         sem_format_query, best_matches = semantic_searcher.semanticSearch(query, scope)
         elapse = time.time() - start_time
         # print(scope)
@@ -79,7 +128,7 @@ def semanticSearch(query: list) -> None:
         print(print(best_matches))
 
         result_file = open("../output/result.html", "w", encoding='utf-8')
-        result_file.write(result_gen.generate("Semantic", sem_format_query, elapse, results))
+        result_file.write(result_gen.generate("Semantic", raw_query, elapse, results))
         result_file.close()
 
         os.startfile(os.getcwd() + "/../output/result.html")
@@ -88,6 +137,8 @@ def semanticSearch(query: list) -> None:
     
     except RuntimeError:
         print("RuntimeError: tf-idf matrix is not loaded")
+    except SyntaxError:
+        print("Wrong argument format")
 
 def evalMode() -> None:
     while True:
