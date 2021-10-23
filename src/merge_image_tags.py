@@ -1,3 +1,7 @@
+# merge_image_tags.py
+# USTChorusWeb2021
+# By HurryPeng & WhitieKitty
+
 import os
 import json
 

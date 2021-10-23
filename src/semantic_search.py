@@ -2,10 +2,6 @@
 # USTChorusWeb2021
 # By HurryPeng & WhitieKitty
 
-# image_search.py
-# USTChorusWeb2021
-# By HurryPeng & WhitieKitty
-
 import os
 import time
 from nltk.stem import PorterStemmer
