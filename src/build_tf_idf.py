@@ -67,11 +67,15 @@ def main():
             if q.qsize() > 50:
                 q.get()
         print("Finished priority queue for document {}".format(doc))
+        norm = 0
         while q.empty() == False:
             current_idf = q.get()
             # print(current_idf[0], current_idf[1])
             tf_idf[doc][current_idf[1]] = round(current_idf[0], 5)
-
+            norm += round(current_idf[0], 5)**2
+        norm = math.sqrt(norm)
+        for word in tf_idf[doc]:
+            tf_idf[doc][word] /= norm
         print(tf_idf[doc])
         print("Finished calculating tf-idf of {}".format(doc))
 
