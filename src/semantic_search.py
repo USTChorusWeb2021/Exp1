@@ -23,7 +23,7 @@ def printWelcomeMsg() -> None:
 
 def printHelpMsg() -> None:
     print("help: print help message")
-    print("load [(optional) path0] [(optional) path1]: load posting list from path0 and tf-idf matrix from path1")
+    print("load [(optional) path0] [(optional) path1]: load posting list from path0 and tf-idf matrix from path1, from default path if path is ignored")
     print("search [query]: do semantic search with query")
     print("    e.g. >> search china america trade war")
     print("exit: bye!")

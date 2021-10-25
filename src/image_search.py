@@ -23,7 +23,7 @@ def printHelpMsg() -> None:
     print("help: print help message")
     print("load [(optional) path]: load image tags")
     print("search [query]: do image search with query")
-    print("    e.g. >> search ship fire")
+    print("    e.g. >> search building glass")
     print("exit: bye!")
 
 def loadImageTags(path: str) -> None:
