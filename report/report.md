@@ -273,13 +273,12 @@ Result page generated
 - 词数统计：该部分用于统计每篇文档中各单词的出现频数。直接遍历语料库中每个文档中的每个词项进行相关统计，存储在字典`word_stat_dict`中
 
 - `tf-idf`值的计算：遍历`word_stat_dict`中的每篇文档，利用公式 
-
   $$
-  tf = \log_{10}(\mathtt{word\_stat\_dict[doc][word]}) + 1
+  tf = \log_{10}(\mathrm{word\_stat\_dict[doc][word]}) + 1
   $$
   和
   $$
-  idf = \log_{10}\frac{\mathtt{doc\_total}}{\mathtt{weak\_posting\_list[word].count}}
+  idf = \log_{10}\frac{\mathrm{doc\_total}}{\mathrm{weak\_posting\_list[word].count}}
   $$
   计算当前文档中某个词项的`tf-idf`值。计算当前文档中某个词项的`tf-idf`值。
 > 这里没有对每个文档的`tf-idf`向量进行归一化处理，且在后续的`semantic_search.py`文件中直接采取了内积的方式进行计算（而非计算余弦值），是因为我们发现这样做的搜索效果优于归一化处理后的搜索效果（或计算余弦值的搜索效果）。
@@ -401,7 +400,6 @@ A - B := \{x\,|\,x\in A, x \notin B\}
 $$
 
 以$\bar{A}$表示在表头带`NOT`记号的表`A`，则直接在带标记的表上进行的与、或运算可以如下操作：
-
 $$
 AB = AB\\
 A\bar{B} = A - B\\
